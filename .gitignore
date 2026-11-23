@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 .claude/settings.local.json
+
+# Local writeup/working notes (not for submission repo)
+four/

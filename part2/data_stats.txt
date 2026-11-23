@@ -1,0 +1,64 @@
+
+Pretrained T5 tokenizer - BEFORE PREPROCESSING
+
+TRAIN
+Number of examples: 4225 examples
+Mean sentence length: 17.10 tokens
+Mean SQL query length: 216.37 tokens
+Vocabulary size (NL): 791 unique tokens
+Vocabulary size (SQL): 555 unique tokens
+
+DEV
+Number of examples: 466 examples
+Mean sentence length: 17.07 tokens
+Mean SQL query length: 210.05 tokens
+Vocabulary size (NL): 465 unique tokens
+Vocabulary size (SQL): 395 unique tokens
+
+Pretrained T5 tokenizer - AFTER PREPROCESSING
+
+TRAIN
+Number of examples: 4225 examples
+Mean sentence length: 17.10 tokens
+Mean SQL query length: 216.82 tokens
+Vocabulary size (NL): 791 unique tokens
+Vocabulary size (SQL): 556 unique tokens
+
+DEV
+Number of examples: 466 examples
+Mean sentence length: 17.07 tokens
+Mean SQL query length: 210.45 tokens
+Vocabulary size (NL): 465 unique tokens
+Vocabulary size (SQL): 397 unique tokens
+
+Custom SentencePiece tokenizer - BEFORE PREPROCESSING
+
+TRAIN
+Number of examples: 4225 examples
+Mean sentence length: 14.53 tokens
+Mean SQL query length: 179.11 tokens
+Vocabulary size (NL): 729 unique tokens
+Vocabulary size (SQL): 456 unique tokens
+
+DEV
+Number of examples: 466 examples
+Mean sentence length: 14.55 tokens
+Mean SQL query length: 173.47 tokens
+Vocabulary size (NL): 453 unique tokens
+Vocabulary size (SQL): 325 unique tokens
+
+Custom SentencePiece tokenizer - AFTER PREPROCESSING
+
+TRAIN
+Number of examples: 4225 examples
+Mean sentence length: 14.53 tokens
+Mean SQL query length: 179.60 tokens
+Vocabulary size (NL): 729 unique tokens
+Vocabulary size (SQL): 457 unique tokens
+
+DEV
+Number of examples: 466 examples
+Mean sentence length: 14.55 tokens
+Mean SQL query length: 173.91 tokens
+Vocabulary size (NL): 453 unique tokens
+Vocabulary size (SQL): 327 unique tokens

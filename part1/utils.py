@@ -13,6 +13,7 @@ import argparse
 from nltk.corpus import wordnet
 from nltk import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
+import nlpaug.augmenter.word as naw
 
 random.seed(0)
 
@@ -34,7 +35,15 @@ def example_transform(example):
 # You can randomly select each word with some fixed probability to replace by a synonym.
 
 
-def custom_transform(example):
+aug = naw.BackTranslationAug(
+    from_model_name="Helsinki-NLP/opus-mt-en-de",
+    to_model_name="Helsinki-NLP/opus-mt-de-en",
+    device="cuda",
+    batch_size=64
+)
+
+
+def custom_transform(examples):
     ################################
     ##### YOUR CODE BEGINGS HERE ###
 
@@ -43,9 +52,11 @@ def custom_transform(example):
     # how you could implement two of them --- synonym replacement and typos.
 
     # You should update example["text"] using your transformation
-
-    raise NotImplementedError
+    
+    # English German Back Translation
+    output = aug.augment(examples["text"])
+    examples["text"] = output
 
     ##### YOUR CODE ENDS HERE ######
 
-    return example
+    return examples

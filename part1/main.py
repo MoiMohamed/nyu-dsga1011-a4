@@ -1,5 +1,5 @@
 import datasets
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
 from transformers import AutoTokenizer
 from torch.utils.data import DataLoader
 from transformers import AutoModelForSequenceClassification
@@ -44,8 +44,24 @@ def do_train(args, model, train_dataloader, save_dir="./out"):
     # Remember that pytorch uses gradient accumumlation so you need to use zero_grad (https://pytorch.org/tutorials/recipes/recipes/zeroing_out_gradients.html)
     # You can use progress_bar.update(1) to see the progress during training
     # You can refer to the pytorch tutorial covered in class for reference
+    model.train()
+    for epoch in range(num_epochs):
+        for batch in train_dataloader:
 
-    raise NotImplementedError
+            batch = {k: v.to(device) for k, v in batch.items()}
+
+            outputs = model(**batch)
+            loss = outputs.loss
+
+            optimizer.zero_grad()
+            loss.backward()
+
+            optimizer.step()
+            lr_scheduler.step()
+
+            progress_bar.update(1)
+
+
 
     ##### YOUR CODE ENDS HERE ######
 
@@ -93,7 +109,34 @@ def create_augmented_dataloader(args, dataset):
     # dataloader will be for the original training split augmented with 5k random transformed examples from the training set.
     # You may find it helpful to see how the dataloader was created at other place in this code.
 
-    raise NotImplementedError
+    tokenized_dataset = dataset["train"].map(tokenize_function, batched=True)
+
+    augmented_dataset = dataset["train"].shuffle(seed=42).select(range(5000))
+   
+    augmented_dataset = augmented_dataset.map(
+        custom_transform,
+        batched=True,
+        batch_size=64,
+        load_from_cache_file=False
+    )
+
+    tokenized_augmented_dataset = augmented_dataset.map(
+        tokenize_function,
+        batched=True
+    )
+
+    tokenized_combo_dataset = concatenate_datasets([
+        tokenized_dataset,
+        tokenized_augmented_dataset
+    ])
+
+    # Prepare dataset for use by model
+    tokenized_combo_dataset = tokenized_combo_dataset.remove_columns(["text"])
+    tokenized_combo_dataset = tokenized_combo_dataset.rename_column("label", "labels")
+    tokenized_combo_dataset.set_format("torch")
+
+
+    train_dataloader = DataLoader(tokenized_combo_dataset, shuffle=True, batch_size=args.batch_size)
 
     ##### YOUR CODE ENDS HERE ######
 
@@ -105,7 +148,12 @@ def create_transformed_dataloader(args, dataset, debug_transformation):
     # Print 5 random transformed examples
     if debug_transformation:
         small_dataset = dataset["test"].shuffle(seed=42).select(range(5))
-        small_transformed_dataset = small_dataset.map(custom_transform, load_from_cache_file=False)
+        small_transformed_dataset = small_dataset.map(
+            custom_transform,
+            batched=True,
+            batch_size=5,
+            load_from_cache_file=False
+        )
         for k in range(5):
             print("Original Example ", str(k))
             print(small_dataset[k])
@@ -116,7 +164,12 @@ def create_transformed_dataloader(args, dataset, debug_transformation):
 
         exit()
 
-    transformed_dataset = dataset["test"].map(custom_transform, load_from_cache_file=False)
+    transformed_dataset = dataset["test"].map(
+        custom_transform,
+        batched=True,
+        batch_size=64,
+        load_from_cache_file=False
+    )
     transformed_tokenized_dataset = transformed_dataset.map(tokenize_function, batched=True, load_from_cache_file=False)
     transformed_tokenized_dataset = transformed_tokenized_dataset.remove_columns(["text"])
     transformed_tokenized_dataset = transformed_tokenized_dataset.rename_column("label", "labels")
